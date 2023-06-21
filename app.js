@@ -40,6 +40,18 @@ app.post("/users", async (req, res) => {
   await user.save();
 });
 
+app.put("/users/:id", async (req, res) => {
+  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.send(user);
+});
+
+app.delete("/users/:id", async (req, res) => {
+  const user = User.findByIdAndDelete(req.params.id);
+  res.send(user);
+});
+
 //task routes
 app.get("/tasks", async (req, res) => {
   const tasks = await Task.find({});
@@ -54,6 +66,18 @@ app.get("/tasks/:id", async (req, res) => {
 app.post("/tasks", async (req, res) => {
   const task = new Task(req.body);
   await task.save();
+});
+
+app.put("/tasks/:id", async (req, res) => {
+  const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.send(task);
+});
+
+app.delete("/tasks/:id", async (req, res) => {
+  const task = Task.findByIdAndDelete(req.params.id);
+  res.send(task);
 });
 
 //app start
