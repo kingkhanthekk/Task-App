@@ -9,20 +9,29 @@ router.use(express.urlencoded({ extended: true }));
 
 router.get("/", async (req, res) => {
   const tasks = await Task.find({});
-  res.send(tasks);
+  res.status(200).send(tasks);
 });
 
 router.get("/:id", async (req, res) => {
   const task = await Task.findById(req.params.id);
-  res.send(task);
+  res.status(200).send(task);
 });
 
 router.post("/", async (req, res) => {
   const task = new Task(req.body);
   await task.save();
+  res.status(200).send(task);
 });
 
 router.put("/:id", async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedChanges = ["title", "description", "isComplete"];
+  const isAllowed = updates.every((update) => allowedChanges.includes(update));
+
+  if (!isAllowed) {
+    return res.status(400).send("Error: Invalid input.");
+  }
+
   const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });

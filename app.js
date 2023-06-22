@@ -32,3 +32,13 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("Server running on port " + port);
 });
+
+const bcrypt = require("bcrypt");
+
+const pass = async () => {
+  const plain = "Ami1324";
+  const hash = await bcrypt.hash(plain, 12);
+  console.log(plain);
+  console.log(hash);
+};
+pass();

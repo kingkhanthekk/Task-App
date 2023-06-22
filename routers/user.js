@@ -9,12 +9,12 @@ router.use(express.urlencoded({ extended: true }));
 
 router.get("/", async (req, res) => {
   const users = await User.find({});
-  res.send(users);
+  res.status(200).send(users);
 });
 
 router.get("/:id", async (req, res) => {
   const user = await User.findById(req.params.id);
-  res.send(user);
+  res.status(200).send(user);
 });
 
 router.post("/", async (req, res) => {
@@ -23,15 +23,27 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
+  const updates = Object.keys(req.body);
+  const allowedChanges = ["username", "email", "password"];
+  const isAllowed = updates.every((update) => {
+    allowedChanges.includes(update);
   });
-  res.send(user);
+
+  if (!isAllowed) {
+    return res.status(400).send("Error: Invalid Request.");
+  }
+
+  const user = await User.findById(req.params.id);
+  for (let update of updates) {
+    user[update] = req.body[update];
+  }
+  await user.save();
+  res.status(200).send(user);
 });
 
 router.delete("/:id", async (req, res) => {
   const user = User.findByIdAndDelete(req.params.id);
-  res.send(user);
+  res.status(200).send(user);
 });
 
 module.exports = router;
