@@ -34,13 +34,21 @@ const userSchema = new Schema({
 });
 
 userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    const password = this.password;
-    const hash = bcrypt.hash(password, 12);
-    this.password = hash;
-  }
-
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 12);
   next();
 });
+
+userSchema.statics.authenticate = async (username, password) => {
+  const user = await this.findOne({ username });
+
+  if (!user) throw new Error("Unable to login.");
+
+  const isMatch = bcrypt.compare(password, user.password);
+
+  if (!isMatch) throw new Error("Unable to login.");
+
+  return user;
+};
 
 module.exports = mongoose.model("User", userSchema);
