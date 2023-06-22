@@ -39,12 +39,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.statics.authenticate = async (username, password) => {
+userSchema.statics.authenticate = async function (username, password) {
   const user = await this.findOne({ username });
 
   if (!user) throw new Error("Unable to login.");
 
-  const isMatch = bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) throw new Error("Unable to login.");
 

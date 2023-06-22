@@ -24,13 +24,22 @@ router.post("/", async (req, res) => {
   res.send(user);
 });
 
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.authenticate(username, password);
+    res.status(200).send(user);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 router.put("/:id", async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedChanges = ["username", "email", "password"];
   const isAllowed = updates.every((update) => {
     return allowedChanges.includes(update);
   });
-  console.log(isAllowed);
   if (!isAllowed) {
     return res.status(400).send("Error: Invalid Request.");
   }
@@ -46,16 +55,6 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const user = User.findByIdAndDelete(req.params.id);
   res.status(200).send(user);
-});
-
-router.post("users/login", async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const user = await User.authenticate({ username, password });
-    res.status(200).send(user);
-  } catch (e) {
-    res.status(400).send(e);
-  }
 });
 
 module.exports = router;
