@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new Schema({
   username: {
@@ -31,6 +32,14 @@ const userSchema = new Schema({
       }
     },
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 userSchema.pre("save", async function (next) {
@@ -49,6 +58,11 @@ userSchema.statics.authenticate = async function (username, password) {
   if (!isMatch) throw new Error("Unable to login.");
 
   return user;
+};
+
+userSchema.methods.tokenGenerate = async function () {
+  const token = await jwt.sign({ _id: this._id.toString() }, "avalidsecret");
+  return token;
 };
 
 module.exports = mongoose.model("User", userSchema);

@@ -4,13 +4,15 @@ const express = require("express");
 //models
 const User = require("../models/user");
 
+//middlewares
+const { auth } = require("../middlewares");
+
 const router = express.Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
-router.get("/", async (req, res) => {
-  const users = await User.find({});
-  res.status(200).send(users);
+router.get("/me", auth, async (req, res) => {
+  res.send(req.user);
 });
 
 router.get("/:id", async (req, res) => {
@@ -20,6 +22,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const user = new User(req.body);
+  const token = await user.tokenGenerate();
+  user.tokens.push({ token });
   await user.save();
   res.send(user);
 });
@@ -28,9 +32,25 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.authenticate(username, password);
+    const token = await user.tokenGenerate();
+    user.tokens.concat({ token });
+    await user.save();
     res.status(200).send(user);
   } catch (e) {
     res.status(400).send(e);
+  }
+});
+
+router.post("/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+
+    await req.user.save();
+    res.status(200).send("Successfully logged out");
+  } catch {
+    res.status(500).send("Something went wrong.");
   }
 });
 
