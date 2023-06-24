@@ -54,6 +54,16 @@ router.post("/logout", auth, async (req, res) => {
   }
 });
 
+router.post("/logoutAll", auth, async (req, res) => {
+  try {
+    req.user.tokens = [];
+    await req.user.save();
+    res.status(200).send("Logged out from all sessions.");
+  } catch {
+    res.status(500).send("Something went wrong");
+  }
+});
+
 router.put("/:id", async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedChanges = ["username", "email", "password"];
