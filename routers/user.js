@@ -15,11 +15,6 @@ router.get("/me", auth, async (req, res) => {
   res.send(req.user);
 });
 
-router.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.status(200).send(user);
-});
-
 router.post("/", async (req, res) => {
   const user = new User(req.body);
   const token = await user.tokenGenerate();
@@ -64,7 +59,7 @@ router.post("/logoutAll", auth, async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedChanges = ["username", "email", "password"];
   const isAllowed = updates.every((update) => {
@@ -74,16 +69,15 @@ router.put("/:id", async (req, res) => {
     return res.status(400).send("Error: Invalid Request.");
   }
 
-  const user = await User.findById(req.params.id);
   for (let update of updates) {
-    user[update] = req.body[update];
+    req.user[update] = req.body[update];
   }
-  await user.save();
+  await req.user.save();
   res.status(200).send(user);
 });
 
-router.delete("/:id", async (req, res) => {
-  const user = User.findByIdAndDelete(req.params.id);
+router.delete("/me", auth, async (req, res) => {
+  const user = User.findByIdAndDelete(req.user._id);
   res.status(200).send(user);
 });
 
