@@ -77,7 +77,7 @@ router.put("/me", auth, async (req, res) => {
 });
 
 router.delete("/me", auth, async (req, res) => {
-  const user = User.findByIdAndDelete(req.user._id);
+  const user = await User.findByIdAndDelete(req.user._id);
   res.status(200).send(user);
 });
 

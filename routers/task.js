@@ -10,14 +10,25 @@ const router = express.Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
-router.get("/", async (req, res) => {
-  const tasks = await Task.find({});
+router.get("/", auth, async (req, res) => {
+  const tasks = await Task.find({ owner: req.user._id });
+
+  if (tasks.length < 1) {
+    return res.send("You have no task.");
+  }
   res.status(200).send(tasks);
 });
 
-router.get("/:id", async (req, res) => {
-  const task = await Task.findById(req.params.id).populate("owner");
-  res.status(200).send(task);
+router.get("/:id", auth, async (req, res) => {
+  try {
+    const task = await Task.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+    res.status(200).send(task);
+  } catch (e) {
+    res.status(404).send("Task not found.");
+  }
 });
 
 router.post("/", auth, async (req, res) => {
@@ -27,7 +38,7 @@ router.post("/", auth, async (req, res) => {
   res.status(200).send(task);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedChanges = ["title", "description", "isComplete"];
   const isAllowed = updates.every((update) => allowedChanges.includes(update));
@@ -36,14 +47,19 @@ router.put("/:id", async (req, res) => {
     return res.status(400).send("Error: Invalid input.");
   }
 
-  const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
+  const task = await Task.findOne({ _id: req.params.id, owner: req.user._id });
+  for (let update in updates) {
+    task[update] = req.body[update];
+  }
+  await task.save();
   res.send(task);
 });
 
-router.delete("/:id", async (req, res) => {
-  const task = Task.findByIdAndDelete(req.params.id);
+router.delete("/:id", auth, async (req, res) => {
+  const task = await Task.findOneAndDelete({
+    _id: req.params.id,
+    owner: req.user._id,
+  });
   res.send(task);
 });
 
