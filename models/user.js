@@ -3,6 +3,7 @@ const validator = require("validator");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Task = require("./task");
 
 const userSchema = new Schema({
   username: {
@@ -52,6 +53,12 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
+});
+
+userSchema.post("findOneAndDelete", async function (user) {
+  if (user) {
+    await Task.deleteMany({ owner: user._id });
+  }
 });
 
 userSchema.statics.authenticate = async function (username, password) {
