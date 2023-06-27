@@ -4,6 +4,8 @@ const express = require("express");
 //models
 const Task = require("../models/task");
 
+const { auth } = require("../middlewares");
+
 const router = express.Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
@@ -14,12 +16,13 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const task = await Task.findById(req.params.id);
+  const task = await Task.findById(req.params.id).populate("owner");
   res.status(200).send(task);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   const task = new Task(req.body);
+  task.owner = req.user._id;
   await task.save();
   res.status(200).send(task);
 });
