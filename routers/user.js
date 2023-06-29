@@ -3,6 +3,20 @@ const express = require("express");
 const multer = require("multer");
 const upload = multer({
   dest: "avatars",
+  limits: {
+    fileSize: 1000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.endsWith(".jpg")) {
+      cb(new Error("You must upload jpg files."));
+    }
+
+    // if (!file.originalname.match(/\.(doc|docx)$/)) {
+    //   cb(new Error("Upload a document file."));
+    // }
+
+    cb(undefined, true);
+  },
 });
 
 //models
