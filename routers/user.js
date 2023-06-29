@@ -1,5 +1,9 @@
 //node modules
 const express = require("express");
+const multer = require("multer");
+const upload = multer({
+  dest: "avatars",
+});
 
 //models
 const User = require("../models/user");
@@ -57,6 +61,11 @@ router.post("/logoutAll", auth, async (req, res) => {
   } catch {
     res.status(500).send("Something went wrong");
   }
+});
+
+//Profile photo upload
+router.post("/me/avatar", upload.single("avatar"), (req, res) => {
+  res.send();
 });
 
 router.put("/me", auth, async (req, res) => {
