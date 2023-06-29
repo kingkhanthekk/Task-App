@@ -11,15 +11,19 @@ router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
 router.get("/", auth, async (req, res) => {
-  // let isComplete = false;
-  // if (req.query.isComplete) isComplete = req.query.isComplete;
+  const match = { owner: req.user._id };
 
-  const limit = parseInt(req.query.limit) || 2;
-  const skip = parseInt(req.query.skip) || 0;
+  if (req.query.isComplete) match.isComplete = req.query.isComplete;
 
-  const tasks = await Task.find({ owner: req.user._id })
-    .limit(limit)
-    .skip(skip);
+  const limit = parseInt(req.query.limit) || false;
+  const skip = parseInt(req.query.skip) || false;
+  const sort = {};
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(":");
+    sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+  }
+
+  const tasks = await Task.find(match).limit(limit).skip(skip).sort(sort);
 
   if (tasks.length < 1) {
     return res.send("You have no task.");
