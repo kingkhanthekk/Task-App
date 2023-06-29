@@ -11,7 +11,10 @@ router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
 router.get("/", auth, async (req, res) => {
-  const tasks = await Task.find({ owner: req.user._id });
+  let isComplete = false;
+  if (req.query.isComplete) isComplete = req.query.isComplete;
+
+  const tasks = await Task.find({ owner: req.user._id, isComplete });
 
   if (tasks.length < 1) {
     return res.send("You have no task.");
