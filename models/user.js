@@ -5,43 +5,48 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Task = require("./task");
 
-const userSchema = new Schema({
-  username: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true,
-    maxlength: 20,
-  },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Invalid email");
-      }
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+      maxlength: 20,
     },
-  },
-  password: {
-    type: String,
-    minlength: 6,
-    required: true,
-    validate(value) {
-      if (value.toLowerCase().includes("password")) {
-        throw new Error("Password cannot contain the word 'password'");
-      }
-    },
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true,
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid email");
+        }
       },
     },
-  ],
-});
+    password: {
+      type: String,
+      minlength: 6,
+      required: true,
+      validate(value) {
+        if (value.toLowerCase().includes("password")) {
+          throw new Error("Password cannot contain the word 'password'");
+        }
+      },
+    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 userSchema.virtual("tasks", {
   ref: "Task",
