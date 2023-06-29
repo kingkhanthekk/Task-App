@@ -7,8 +7,8 @@ const upload = multer({
     fileSize: 1000000,
   },
   fileFilter(req, file, cb) {
-    if (!file.originalname.endsWith(".jpg")) {
-      cb(new Error("You must upload jpg files."));
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      cb(new Error("You must upload jpg, jpeg, or png files."));
     }
 
     // if (!file.originalname.match(/\.(doc|docx)$/)) {
