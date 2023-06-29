@@ -82,6 +82,11 @@ router.post("/me/avatar", upload.single("avatar"), (req, res) => {
   res.send();
 });
 
+//Multiple file upload with uploading count
+// router.post("/me/avatar", upload.array("avatar", 1), (req, res) => {
+//   res.send();
+// });
+
 router.put("/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedChanges = ["username", "email", "password"];
