@@ -4,16 +4,25 @@ const api_key =
 
 sgMail.setApiKey(api_key);
 
-sgMail
-  .send({
-    to: "abul.kalam.work369@gmail.com",
+const sendWelcomeEmail = (username, emailAddress) => {
+  sgMail.send({
+    to: emailAddress,
     from: "abul.kalam.work369@gmail.com",
-    subject: "This is a test email",
-    text: "Hello hello distik distik...",
-  })
-  .then(() => {
-    console.log("Email sent.");
-  })
-  .catch((error) => {
-    console.log(error.response.body);
+    subject: "Thanks for joining in!",
+    text: `Welcome to the Task App ${username}.`,
   });
+};
+
+const sendCancelEmail = (username, emailAddress) => {
+  sgMail.send({
+    to: emailAddress,
+    from: "abul.kalam.work369@gmail.com",
+    subject: "Successfully unsubscribed!",
+    text: `It is sad to hear that you have unsubscribed from Task App. ${username}, let us know why you made that decision`,
+  });
+};
+
+module.exports = {
+  sendWelcomeEmail,
+  sendCancelEmail,
+};

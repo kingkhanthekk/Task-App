@@ -21,6 +21,7 @@ const upload = multer({
 
 //models
 const User = require("../models/user");
+const { sendWelcomeEmail, sendCancelEmail } = require("../email");
 
 //middlewares
 const { auth } = require("../middlewares");
@@ -33,14 +34,6 @@ router.get("/me", auth, async (req, res) => {
   res.send(req.user);
 });
 
-router.post("/", async (req, res) => {
-  const user = new User(req.body);
-  const token = await user.tokenGenerate();
-  user.tokens.push({ token });
-  await user.save();
-  res.send(user);
-});
-
 router.get("/me/avatar", auth, (req, res) => {
   try {
     // const user = await User.findById(req.params.id);
@@ -49,6 +42,15 @@ router.get("/me/avatar", auth, (req, res) => {
   } catch (e) {
     res.status(500).send(e);
   }
+});
+
+router.post("/", async (req, res) => {
+  const user = new User(req.body);
+  sendWelcomeEmail(user.username, user.email);
+  const token = await user.tokenGenerate();
+  user.tokens.push({ token });
+  await user.save();
+  res.send(user);
 });
 
 router.post("/login", async (req, res) => {
@@ -130,6 +132,7 @@ router.put("/me", auth, async (req, res) => {
 
 router.delete("/me", auth, async (req, res) => {
   const user = await User.findByIdAndDelete(req.user._id);
+  sendCancelEmail(user.username, user.email);
   res.status(200).send(user);
 });
 
