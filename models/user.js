@@ -80,7 +80,10 @@ userSchema.statics.authenticate = async function (username, password) {
 };
 
 userSchema.methods.tokenGenerate = async function () {
-  const token = await jwt.sign({ _id: this._id.toString() }, "avalidsecret");
+  const token = await jwt.sign(
+    { _id: this._id.toString() },
+    process.env.JWT_SECRET
+  );
   return token;
 };
 
