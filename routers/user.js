@@ -1,5 +1,6 @@
 //node modules
 const express = require("express");
+const sharp = require("sharp");
 const multer = require("multer");
 const upload = multer({
   limits: {
@@ -92,7 +93,11 @@ router.post(
   auth,
   upload.single("avatar"),
   async (req, res) => {
-    req.user.avatar = req.file.buffer;
+    const buffer = await sharp(req.file.buffer)
+      .resize(250, 250)
+      .png()
+      .toBuffer();
+    req.user.avatar = buffer;
     await req.user.save();
     res.send();
   },
