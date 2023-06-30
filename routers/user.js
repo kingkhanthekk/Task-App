@@ -40,6 +40,16 @@ router.post("/", async (req, res) => {
   res.send(user);
 });
 
+router.get("/me/avatar", auth, (req, res) => {
+  try {
+    // const user = await User.findById(req.params.id);
+    res.set("Content-Type", "image/jpg");
+    res.send(req.user.avatar);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
