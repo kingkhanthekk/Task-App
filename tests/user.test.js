@@ -44,7 +44,7 @@ test("Should login a user", async () => {
     .expect(200);
 });
 
-test("Should fail to login a user", async () => {
+test("Should fail to login an unauthorized user", async () => {
   await request(app)
     .post("/users/login")
     .send({
@@ -60,4 +60,20 @@ test("Should get profile for a user", async () => {
     .set("Authorization", `Bearer ${user.tokens[0].token}`)
     .send()
     .expect(200);
+});
+
+test("Should fail to get profile for unauthorized user", async () => {
+  await request(app).get("/users/me").send().expect(401);
+});
+
+test("Should delete account for a user", async () => {
+  await request(app)
+    .delete("/users/me")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send()
+    .expect(200);
+});
+
+test("Should not delete account for an unauthorized user", async () => {
+  await request(app).delete("/users/me").send().expect(401);
 });

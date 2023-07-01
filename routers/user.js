@@ -131,9 +131,13 @@ router.put("/me", auth, async (req, res) => {
 });
 
 router.delete("/me", auth, async (req, res) => {
-  const user = await User.findByIdAndDelete(req.user._id);
-  sendCancelEmail(user.username, user.email);
-  res.status(200).send(user);
+  try {
+    const user = await User.findByIdAndDelete(req.user._id);
+    sendCancelEmail(user.username, user.email);
+    res.status(200).send(user);
+  } catch {
+    res.status(401).send();
+  }
 });
 
 router.delete("/me/avatar", auth, async (req, res) => {
