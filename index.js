@@ -10,8 +10,9 @@ const userRoutes = require("./routers/user");
 const taskRoutes = require("./routers/task");
 
 //mongoDB connection
+let DB = "mongodb://127.0.0.1:27017/taskAppDB-test";
 mongoose
-  .connect("mongodb://127.0.0.1:27017/taskAppDB-test", {
+  .connect(DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

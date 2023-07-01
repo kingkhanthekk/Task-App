@@ -1,11 +1,21 @@
 const app = require("../index");
 const request = require("supertest");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+
+const userID = new mongoose.Types.ObjectId();
 
 const user = {
+  _id: userID,
   username: "ajitel",
   email: "abulk690@gmail.com",
   password: "amijinis",
+  tokens: [
+    {
+      token: jwt.sign({ _id: userID.toString() }, process.env.JWT_SECRET),
+    },
+  ],
 };
 
 beforeEach(async () => {
@@ -42,4 +52,12 @@ test("Should fail to login a user", async () => {
       password: "istik",
     })
     .expect(400);
+});
+
+test("Should get profile for a user", async () => {
+  await request(app)
+    .get("/users/me")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send()
+    .expect(200);
 });
