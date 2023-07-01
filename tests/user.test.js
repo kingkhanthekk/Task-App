@@ -23,3 +23,23 @@ test("Should sign up a user", async () => {
     })
     .expect(200);
 });
+
+test("Should login a user", async () => {
+  await request(app)
+    .post("/users/login")
+    .send({
+      username: user.username,
+      password: user.password,
+    })
+    .expect(200);
+});
+
+test("Should fail to login a user", async () => {
+  await request(app)
+    .post("/users/login")
+    .send({
+      username: "amarnam",
+      password: "istik",
+    })
+    .expect(400);
+});
