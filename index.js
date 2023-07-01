@@ -11,7 +11,7 @@ const taskRoutes = require("./routers/task");
 
 //mongoDB connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/taskAppDB", {
+  .connect("mongodb://127.0.0.1:27017/taskAppDB-test", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
