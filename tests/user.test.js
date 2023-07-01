@@ -81,6 +81,10 @@ test("Should delete account for a user", async () => {
     .set("Authorization", `Bearer ${user.tokens[0].token}`)
     .send()
     .expect(200);
+
+  //Assert user deleted
+  const userDeleted = await User.findOne({ _id: user._id });
+  expect(userDeleted).toBeNull();
 });
 
 test("Should not delete account for an unauthorized user", async () => {
