@@ -69,11 +69,17 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.delete("/:id", auth, async (req, res) => {
-  const task = await Task.findOneAndDelete({
-    _id: req.params.id,
-    owner: req.user._id,
-  });
-  res.send(task);
+  try {
+    const task = await Task.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+    res.send(task);
+  } catch {
+    res.status(401).send();
+  }
+
+  // if (!task) return res.status(401).send();
 });
 
 module.exports = router;
