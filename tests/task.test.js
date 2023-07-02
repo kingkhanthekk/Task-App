@@ -72,3 +72,31 @@ test("Should not delete a task for unauthorized user", async () => {
   const taskAssert = await Task.findById(task1._id);
   expect(taskAssert).not.toBeNull();
 });
+
+test("Should update a user task", async () => {
+  await request(app)
+    .put(`/tasks/${task1._id}`)
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send({
+      title: "Jinis",
+    })
+    .expect(200);
+
+  //Assert
+  const taskAssert = await Task.findById(task1._id);
+  expect(taskAssert.title).toBe("Jinis");
+});
+
+test("Should not update a user task if unauthorized", async () => {
+  await request(app)
+    .put(`/tasks/${task1._id}`)
+    .set("Authorization", `Bearer ${user2.tokens[0].token}`)
+    .send({
+      title: "Fuska",
+    })
+    .expect(401);
+
+  //Assert
+  const taskAssert = await Task.findById(task1._id);
+  expect(taskAssert.title).not.toBe("Fuska");
+});
