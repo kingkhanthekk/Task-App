@@ -114,3 +114,26 @@ test("Should delete an user's avatar", async () => {
   const userAssert = await User.findById(userID);
   expect(userAssert.avatar).toBe(undefined);
 });
+
+test("Should update user information", async () => {
+  await request(app)
+    .put("/users/me")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send({
+      username: "Fujitel",
+    })
+    .expect(200);
+
+  const userAssert = await User.findById(userID);
+  expect(userAssert.username).toEqual("Fujitel");
+});
+
+test("Should not update unauthorized user information", async () => {
+  await request(app)
+    .put("/users/me")
+    .send({
+      username: "Fujitel",
+      email: "hakka@bakka.com",
+    })
+    .expect(401);
+});
