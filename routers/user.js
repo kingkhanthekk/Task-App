@@ -127,7 +127,7 @@ router.put("/me", auth, async (req, res) => {
     req.user[update] = req.body[update];
   }
   await req.user.save();
-  res.status(200).send(user);
+  res.status(200).send(req.user);
 });
 
 router.delete("/me", auth, async (req, res) => {
