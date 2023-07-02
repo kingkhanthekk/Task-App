@@ -107,7 +107,7 @@ test("Should update user information", async () => {
     .expect(200);
 
   const userAssert = await User.findById(userID);
-  expect(userAssert.username).toEqual("Fujitel");
+  expect(userAssert.username).toBe("Fujitel");
 });
 
 test("Should not update unauthorized user information", async () => {
