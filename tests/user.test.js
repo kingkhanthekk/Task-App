@@ -9,7 +9,7 @@ const userID = new mongoose.Types.ObjectId();
 const user = {
   _id: userID,
   username: "ajitel",
-  email: "abulk690@gmail.com",
+  email: "hawa@gmail.com",
   password: "amijinis",
   tokens: [
     {
