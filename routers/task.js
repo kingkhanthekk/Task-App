@@ -37,6 +37,7 @@ router.get("/:id", auth, async (req, res) => {
       _id: req.params.id,
       owner: req.user._id,
     });
+    if (!task) return res.status(401).send();
     res.status(200).send(task);
   } catch (e) {
     res.status(404).send("Task not found.");
