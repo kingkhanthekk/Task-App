@@ -60,10 +60,14 @@ router.put("/:id", auth, async (req, res) => {
     return res.status(400).send("Error: Invalid input.");
   }
 
-  const task = await Task.findOne({ _id: req.params.id, owner: req.user._id });
-  for (let update in updates) {
+  const task = await Task.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+  });
+  for (let update of updates) {
     task[update] = req.body[update];
   }
+
   await task.save();
   res.send(task);
 });
