@@ -90,3 +90,27 @@ test("Should delete account for a user", async () => {
 test("Should not delete account for an unauthorized user", async () => {
   await request(app).delete("/users/me").send().expect(401);
 });
+
+test("Should upload an avatar for a user", async () => {
+  await request(app)
+    .post("/users/me/avatar")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .attach("avatar", "tests/fixtures/profile-pic.jpg")
+    .expect(200);
+
+  //Assert
+  const userAssert = await User.findById(userID);
+  expect(userAssert.avatar).toEqual(expect.any(Buffer));
+});
+
+test("Should delete an user's avatar", async () => {
+  await request(app)
+    .delete("/users/me/avatar")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send()
+    .expect(200);
+
+  //Assert
+  const userAssert = await User.findById(userID);
+  expect(userAssert.avatar).toBe(undefined);
+});
