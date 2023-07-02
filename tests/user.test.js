@@ -137,3 +137,27 @@ test("Should not update unauthorized user information", async () => {
     })
     .expect(401);
 });
+
+test("Should logout a user", async () => {
+  await request(app)
+    .post("/users/logout")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send()
+    .expect(200);
+
+  //Assert
+  const userAssert = await User.findById(userID);
+  expect(userAssert.tokens).not.toContain(user.tokens[0].token);
+});
+
+test("Should logout from all user sessions", async () => {
+  await request(app)
+    .post("/users/logoutAll")
+    .set("Authorization", `Bearer ${user.tokens[0].token}`)
+    .send()
+    .expect(200);
+
+  //Assert
+  const userAssert = await User.findById(userID);
+  expect(userAssert.tokens).toEqual([]);
+});
