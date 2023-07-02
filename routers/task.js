@@ -52,24 +52,30 @@ router.post("/", auth, async (req, res) => {
 });
 
 router.put("/:id", auth, async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedChanges = ["title", "description", "isComplete"];
-  const isAllowed = updates.every((update) => allowedChanges.includes(update));
+  try {
+    const updates = Object.keys(req.body);
+    const allowedChanges = ["title", "description", "isComplete"];
+    const isAllowed = updates.every((update) =>
+      allowedChanges.includes(update)
+    );
 
-  if (!isAllowed) {
-    return res.status(400).send("Error: Invalid input.");
+    if (!isAllowed) {
+      return res.status(400).send("Error: Invalid input.");
+    }
+
+    const task = await Task.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+    for (let update of updates) {
+      task[update] = req.body[update];
+    }
+
+    await task.save();
+    res.send(task);
+  } catch {
+    res.status(401).send();
   }
-
-  const task = await Task.findOne({
-    _id: req.params.id,
-    owner: req.user._id,
-  });
-  for (let update of updates) {
-    task[update] = req.body[update];
-  }
-
-  await task.save();
-  res.send(task);
 });
 
 router.delete("/:id", auth, async (req, res) => {
